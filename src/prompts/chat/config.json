@@ -1,0 +1,30 @@
+{
+    "schema": 1.1,
+    "description": "Chat with Teams RAG.",
+    "type": "completion",
+    "completion": {
+        "completion_type": "chat",
+        "include_history": true,
+        "include_input": true,
+        "max_input_tokens": 2800,
+        "max_tokens": 1000,
+        "temperature": 0.9,
+        "top_p": 1.0,
+        "presence_penalty": 0.6,
+        "frequency_penalty": 0.0,
+        "stop_sequences": []
+    },
+    "augmentation": {
+        "data_sources": {
+            "azure-ai-search": 1200
+        }
+    },
+    "data_source_configs": {
+        "azure-ai-search": {
+            "endpoint": "https://armelysearchservice.search.windows.net",
+            "index_name": "sharepoint-index2", 
+            "api_key": "YOUR_AZURE_SEARCH_API_KEY",
+            "embedding_deployment": "YOUR_AZURE_EMBEDDING_DEPLOYMENT"
+        }
+    }
+}
