@@ -16,11 +16,11 @@
     },
     "augmentation": {
         "data_sources": {
-            "azure-ai-search": 1200
+            "armelysearchservice": 1200
         }
     },
     "data_source_configs": {
-        "azure-ai-search": {
+        "armelysearchservice": {
             "endpoint": "https://armelysearchservice.search.windows.net",
             "index_name": "sharepoint-index2", 
             "api_key": "YOUR_AZURE_SEARCH_API_KEY",

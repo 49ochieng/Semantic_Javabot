@@ -15,7 +15,7 @@ class AzureAISearchDataSource {
             throw new Error("Missing required options to initialize AzureAISearchDataSource.");
         }
 
-        this.name = options.name || 'azure-ai-search';
+        this.name = options.name || 'armelysearchservice';
         this.options = options;
         
         // Initialize the SearchClient with the provided options
@@ -46,17 +46,17 @@ class AzureAISearchDataSource {
         const queryVector = await this.getEmbeddingVector(query);
         const searchResults = await this.searchClient.search(query, {
             searchFields: ["metadata_spo_item_name", "content"],
-            select: selectedFields,
-            vectorSearchOptions: {
-                queries: [
-                    {
-                        kind: "vector",
-                        fields: ["content"], // Assuming content field is vector searchable
-                        kNearestNeighborsCount: 2,
-                        vector: queryVector
-                    }
-                ]
-            },
+            select: selectedFields
+            // ,vectorSearchOptions: {
+            //     queries: [
+            //         {
+            //             kind: "vector",
+            //             fields: ["content"], // Assuming content field is vector searchable
+            //             kNearestNeighborsCount: 2,
+            //             vector: queryVector
+            //         }
+            //     ]
+            // },
         });
 
         // If no results, return an empty output
@@ -118,7 +118,7 @@ module.exports = {
     AzureAISearchDataSource,
 };
 const searchDataSource = new AzureAISearchDataSource({
-    name: "azure-ai-search", // This name should match the name in config.json
+    name: "armelysearchservice", // This name should match the name in config.json
     azureAISearchEndpoint: "https://armelysearchservice.search.windows.net",
     indexName: "sharepoint-index2",
     azureAISearchApiKey: "YOUR_AZURE_SEARCH_API_KEY",
