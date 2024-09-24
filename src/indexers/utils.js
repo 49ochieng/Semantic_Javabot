@@ -59,10 +59,10 @@ async function createIndexIfNotExists(client, name) {
                         {
                             name: "my-semantic-config-default",
                             prioritizedFields: {
-                                titleField: { fieldName: "metadata_spo_item_title" },
+                                titleField: { fieldName: "metadata_spo_item_name" },
                                 prioritizedContentFields: [
                                     { fieldName: "content" },
-                                    { fieldName: "metadata_spo_item_name" },
+                                    { fieldName: "metadata_spo_item_weburi" },
                                 ],
                             },
                         },

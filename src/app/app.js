@@ -34,6 +34,7 @@ planner.prompts.addDataSource(
     azureOpenAIApiKey: config.azureOpenAIKey,
     azureOpenAIEndpoint: config.azureOpenAIEndpoint,
     azureOpenAIEmbeddingDeploymentName: config.azureOpenAIEmbeddingDeploymentName,
+    semanticConfiguration: "my-semantic-config-default", // Ensure semantic search is used
   })
 );
 
@@ -43,6 +44,15 @@ const app = new Application({
   storage,
   ai: {
     planner,
+    outputHandler: async (context, response) => {
+      if (response.source === "llm") {
+        // This indicates that the response is AI-generated
+        context.sendActivity(`AI-generated response:\n${response.output}`);
+      } else {
+        // This indicates that the response comes from a document search
+        context.sendActivity(`Here is the information you requested:\n${response.output}`);
+      }
+    }
   },
 });
 

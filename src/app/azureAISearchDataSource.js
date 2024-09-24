@@ -1,7 +1,7 @@
 const { AzureKeyCredential, SearchClient } = require("@azure/search-documents");
 
 /**
- * A data source that searches through Azure AI search.
+ * A data source that searches through Azure AI search using semantic search.
  */
 class AzureAISearchDataSource {
     /**
@@ -33,18 +33,12 @@ class AzureAISearchDataSource {
             return { output: "No input provided for the search.", length: 0, tooLong: false };
         }
 
-        // Construct the vector search query
-        const vectorQuery = {
-            kind: "hnsw", // HNSW algorithm for vector search
-            fields: [], // Leave fields empty if not using specific fields for the vector search
-            vector: this.createDummyVector(), // Replace with actual vector data or logic
-            kNearestNeighborsCount: 2, // Number of nearest neighbors to search for
-        };
-
-        // Perform the search
+        // Perform the search using semantic search configuration
         const searchResults = await this.searchClient.search(query, {
-            vectorQueries: [vectorQuery], // Use vectorQueries instead of vectorSearchOptions
-            select: ["id", "metadata_spo_item_name", "metadata_spo_item_weburi", "content"],
+            queryType: "semantic", // Enabling semantic search
+            semanticConfiguration: this.options.semanticConfiguration, // Use the provided semantic config
+            select: ["id", "metadata_spo_item_name", "metadata_spo_item_weburi", "content"], // Ensure the correct fields are selected
+            queryLanguage: "en-us", // Assuming English is the query language
         });
 
         // If no results, return an empty output
@@ -71,18 +65,25 @@ class AzureAISearchDataSource {
     }
 
     /**
-     * Dummy function to create a vector for the query.
-     * Replace this with your actual vector generation logic.
-     */
-    createDummyVector() {
-        return [0.1, 0.2, 0.3, 0.4]; // Example vector; replace with actual vector data
-    }
-
-    /**
-     * Formats the result string.
+     * Formats the result string to include metadata_spo_item_weburi as a clickable link.
      */
     formatDocument(result) {
-        return `<context>${JSON.stringify(result)}</context>`;
+       // Set default values if the data is missing
+    const webUri = result.metadata_spo_item_weburi || 'No reference available';
+    const title = result.metadata_spo_item_name || 'Untitled Document';
+    const content = result.content || 'No content available';
+
+    // Log the URL for debugging purposes
+    console.log("Doc URL:", webUri);
+
+    // If the webUri is not available, you might want to handle it differently in the return statement
+    if (webUri === 'No reference available') {
+        return `**Title**: ${title}\n\n**Content**: ${content}\n\n(No document reference available)\n\n`;
+    } else {
+        // Format the result with a clickable hyperlink
+        return `**Title**: ${title}\n\n**Content**: ${content}\n\n[Read more here](${webUri})\n\n`;
+    }
+    
     }
 }
 
@@ -96,4 +97,5 @@ const searchDataSource = new AzureAISearchDataSource({
     azureAISearchEndpoint: "https://armelysearchservice.search.windows.net",
     indexName: "sharepoint-index2",
     azureAISearchApiKey: "YOUR_AZURE_SEARCH_API_KEY",
+    semanticConfiguration: "my-semantic-config-default", // Your semantic search configuration
 });
